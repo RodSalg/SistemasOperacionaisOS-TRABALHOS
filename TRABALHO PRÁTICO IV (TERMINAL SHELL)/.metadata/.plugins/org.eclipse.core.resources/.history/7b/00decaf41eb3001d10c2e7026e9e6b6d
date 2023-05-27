@@ -1,0 +1,89 @@
+import java.io.File;
+
+public class TerminalLinux extends Comandos {
+	private String[] comandoUsuario;
+	private File caminho;
+	
+	
+//	public TerminalLinux(String[] comandoUsuario, File caminho)
+//	{
+//		
+//		this.comandoUsuario = comandoUsuario;
+//		this.caminho = caminho;
+//		
+//	}
+	
+	
+	public void runTerminal(String[] comandoUsuarioParametro, File caminhoParametro)
+	{
+		
+        this.comandoUsuario = comandoUsuarioParametro;
+        this.caminho = caminhoParametro;
+        
+        if(comandoUsuario[0].equals("cd"))
+        {
+        	this.caminho = this.cd(comandoUsuario, caminho);
+        	
+        }else if()
+        {
+        	
+        }
+        
+        switch(comandoUsuario[0]) {
+//            case "cd":
+//            	
+//                this.caminho = this.cd(comandoUsuario, caminho);
+//                break;
+                
+            case "pwd":
+                this.pwd(caminho);
+                break;
+                
+            case "ls":
+            	
+            	this.ls(caminho);
+
+                break;
+                
+            case "cat":
+            	
+            	this.cat(comandoUsuario, caminho);
+            	
+                break;
+                
+            case "cp":
+            	this.cp(comandoUsuario, caminho);
+                break;
+                
+            case "mv":
+            	this.mv(comandoUsuario, caminho);
+                break;
+                
+            case "mkdir":
+            	this.mkdir(comandoUsuario, caminho);
+                break;
+                
+            case "rm":
+            	this.rm(comandoUsuario, caminho);
+                break;
+                
+            case "head":
+            	this.head(comandoUsuario, caminho);
+                break;
+                
+            case "clear":
+            	this.clear();
+            	break;
+                
+            case "":
+                break;
+                
+            default:
+                System.out.println("Comando nao encontrado: " + comandoUsuario[0]);
+                break;
+        }
+		
+	}
+	
+
+}

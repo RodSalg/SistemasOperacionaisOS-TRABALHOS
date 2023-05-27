@@ -1,0 +1,3 @@
+INDEX VERSION 1.131+C:\Users\georg\OneDrive\Documentos\GitHub\SISTEMAS OPERACIONAIS\TP1 - Thiago Rodrigo Monteiro Salgado (versao final)\.metadata\.plugins\org.eclipse.jdt.core
+1865797976.index
+3947833915.index

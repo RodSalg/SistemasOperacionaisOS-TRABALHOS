@@ -1,0 +1,79 @@
+import java.io.File;
+
+public class TerminalLinux extends Comandos {
+	private String[] comandoUsuario;
+	private File caminho;
+	
+	
+//	public TerminalLinux(String[] comandoUsuario, File caminho)
+//	{
+//		
+//		this.comandoUsuario = comandoUsuario;
+//		this.caminho = caminho;
+//		
+//	}
+	
+	
+	public void runTermina()
+	{
+		
+        
+        
+        switch(comandoUsuario[0]) {
+            case "cd":
+            	
+                caminho = this.cd(comandoUsuario, caminho);
+                break;
+                
+            case "pwd":
+                this.pwd(caminho);
+                break;
+                
+            case "ls":
+            	
+            	this.ls(caminho);
+
+                break;
+                
+            case "cat":
+            	
+            	this.cat(comandoUsuario, caminho);
+            	
+                break;
+                
+            case "cp":
+            	termLinux.cp(comandoUsuario, caminho);
+                break;
+                
+            case "mv":
+            	termLinux.mv(comandoUsuario, caminho);
+                break;
+                
+            case "mkdir":
+            	termLinux.mkdir(comandoUsuario, caminho);
+                break;
+                
+            case "rm":
+            	termLinux.rm(comandoUsuario, caminho);
+                break;
+                
+            case "head":
+            	termLinux.head(comandoUsuario, caminho);
+                break;
+                
+            case "clear":
+            	termLinux.clear();
+            	break;
+                
+            case "":
+                break;
+                
+            default:
+                System.out.println("Comando nao encontrado: " + comandoUsuario[0]);
+                break;
+        }
+		
+	}
+	
+
+}

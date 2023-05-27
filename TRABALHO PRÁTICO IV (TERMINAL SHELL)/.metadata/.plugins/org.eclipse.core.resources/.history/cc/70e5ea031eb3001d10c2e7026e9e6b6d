@@ -1,0 +1,11 @@
+
+public class TerminalLinux extends Comandos {
+	
+	
+	public void runTermina()
+	{
+		
+	}
+	
+
+}

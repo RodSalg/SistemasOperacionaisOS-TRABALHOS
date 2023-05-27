@@ -1,0 +1,20 @@
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+public class Main {
+    public static void main(String[] args) {
+        // Obter o caminho do diretório raiz do sistema
+        File rootDir = new File("/");
+        
+        // Converter o caminho do diretório raiz para um objeto Path
+        Path rootPath = 
+        
+        // Listar todos os arquivos e diretórios no diretório raiz
+        try {
+            Files.list(rootPath).forEach(System.out::println);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}

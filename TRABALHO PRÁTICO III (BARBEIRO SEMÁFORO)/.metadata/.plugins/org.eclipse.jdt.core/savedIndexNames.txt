@@ -1,0 +1,5 @@
+INDEX VERSION 1.131+C:\Users\georg\OneDrive\Documentos\GitHub\SISTEMAS OPERACIONAIS\TRABALHO PRÁTICO III\.metadata\.plugins\org.eclipse.jdt.core
+1258381566.index
+1865797976.index
+94333073.index
+321184431.index

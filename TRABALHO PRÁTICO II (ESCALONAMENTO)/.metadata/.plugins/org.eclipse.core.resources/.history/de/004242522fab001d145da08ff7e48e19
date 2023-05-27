@@ -1,0 +1,201 @@
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.concurrent.Semaphore;
+
+
+
+class Barbeiro extends Thread {
+	
+	Semaphore semaforo = Barbearia.semaforo;
+	ArrayList<Cliente> oficiais = Barbearia.oficiais;
+	ArrayList<Cliente> sargentos = Barbearia.sargentos;
+	ArrayList<Cliente> cabos = Barbearia.cabos;
+	boolean ocupado = false;
+	
+	Barbeiro(String nome) {
+		super(nome);
+	}
+	
+	@Override
+	public void run() {
+		
+		try {
+			Cliente cliente;
+			
+			while(Barbearia.tainha.isAlive() || Barbearia.isNotEmpty()) {
+				
+				cliente = null;
+				
+				semaforo.acquire();
+				
+				if(Barbearia.numBarbeiros == 3) {
+					
+					if(getName().equals("Zero")) {
+						
+						if(oficiais.size() > 0) {
+							
+							ocupado = true;
+							cliente = oficiais.remove(0);
+							
+						} else if(sargentos.size() > 0 && Barbearia.dentinho.ocupado) {
+							
+							cliente = sargentos.remove(0);
+							
+						} else if(cabos.size() > 0 && Barbearia.otto.ocupado) {
+							
+							cliente = cabos.remove(0);
+							
+						}
+					
+					}
+					
+					else if(getName().equals("Dentinho")) {
+						
+						if(sargentos.size() > 0) {
+
+							ocupado = true;
+							cliente = sargentos.remove(0);
+							
+						} else if(oficiais.size() > 0 && Barbearia.zero.ocupado) {
+							
+							cliente = oficiais.remove(0);
+							
+						} else if(cabos.size() > 0 && Barbearia.otto.ocupado) {
+							
+							cliente = cabos.remove(0);
+							
+						}
+						
+					}
+					
+					else if(getName().equals("Otto")) {
+						
+						if(cabos.size() > 0) {
+
+							ocupado = true;
+							cliente = cabos.remove(0);
+							
+						} else if(oficiais.size() > 0 && Barbearia.zero.ocupado) {
+							
+							cliente = oficiais.remove(0);
+							
+						} else if(sargentos.size() > 0 && Barbearia.dentinho.ocupado) {
+							
+							cliente = sargentos.remove(0);
+							
+						}
+						
+					}
+					
+				}
+				
+				else {
+						
+					if(oficiais.size() > 0) {
+						
+						cliente = oficiais.remove(0);
+						
+					} else if(sargentos.size() > 0) {
+						
+						cliente = sargentos.remove(0);
+						
+					} else if(cabos.size() > 0) {
+						
+						cliente = cabos.remove(0);
+						
+					}
+					
+				}
+				
+				if(cliente == null) {
+					
+					semaforo.release();
+					
+				} else {
+					
+					System.out.println(getName()+" cortando "+cliente);
+					semaforo.release();
+					Thread.sleep(cliente.tempoCorte*1000);
+					ocupado = false;
+					
+				}
+				
+			}
+			
+			System.out.println(getName()+" foi pra casa");
+			
+		} catch (Exception e) {
+			System.out.println(getName());
+			e.printStackTrace();
+		}
+	}
+}
+
+public class Barbearia {
+
+	static ArrayList<Cliente> clientes = new ArrayList<Cliente>(1000);
+	static ArrayList<Cliente> oficiais = new ArrayList<Cliente>(20);
+	static ArrayList<Cliente> sargentos = new ArrayList<Cliente>(20);
+	static ArrayList<Cliente> cabos = new ArrayList<Cliente>(20);
+	static Tainha tainha = new Tainha();
+	static Escovinha escovinha = new Escovinha();
+	static Semaphore semaforo = new Semaphore(1);
+	static Barbeiro zero = new Barbeiro("Zero");
+	static Barbeiro dentinho = new Barbeiro("Dentinho");
+	static Barbeiro otto = new Barbeiro("Otto");
+	static int numBarbeiros;
+	
+	static boolean isNotCrowded() {
+		return cadeirasOcupadas() != 20;
+	}
+	
+	static boolean isNotEmpty() {
+		return cadeirasOcupadas() != 0;
+	}
+	
+	static int cadeirasOcupadas() {
+		return (oficiais.size()+sargentos.size()+cabos.size());
+	}
+	
+	static int cadeirasLivres() {
+		return 20 - cadeirasOcupadas();
+	}
+	
+	static boolean isAllAlive() {
+		return (tainha.isAlive()||zero.isAlive()||dentinho.isAlive()||otto.isAlive());
+	}
+	
+	public static void main(String[] args) throws Exception {
+		
+		FileReader file = new FileReader("teste.txt");
+		Scanner input = new Scanner(file);
+
+		while(input.hasNextLine()) {
+			clientes.add(new Cliente(input.nextInt(), input.nextInt()));
+		}
+		input.close();
+		file.close();
+		
+		input = new Scanner(System.in);
+		
+		System.out.println("Defina o periodo de cochilo do sargento tainha [1-5]:");
+		int periodoCochilo = input.nextInt();
+		
+		System.out.println("Defina o numero de barbeiros [1-3]:");
+		numBarbeiros = input.nextInt();
+		
+		tainha.setPeriodo(periodoCochilo);
+		tainha.start();
+		
+		escovinha.start();
+		
+		if(numBarbeiros >= 1) zero.start();
+		if(numBarbeiros >= 2) dentinho.start();
+		if(numBarbeiros >= 3) otto.start();
+		
+		input.close();
+
+	}
+
+}

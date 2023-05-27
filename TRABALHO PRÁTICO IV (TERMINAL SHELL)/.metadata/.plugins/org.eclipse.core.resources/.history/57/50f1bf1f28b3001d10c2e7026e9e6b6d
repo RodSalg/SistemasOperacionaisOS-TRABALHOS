@@ -1,0 +1,133 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+
+public class arquivoEditado {
+    
+    public static void main(String[] args) throws IOException {
+        
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        String input = "";
+        File currentDir = new File(System.getProperty("user.dir"));
+        
+        while(!input.equals("exit")) {
+            
+            System.out.print(currentDir.getPath() + " > ");
+            input = reader.readLine();
+            String[] tokens = input.split(" ");
+            
+            switch(tokens[0]) {
+                case "cd":
+                    if(tokens.length > 1) {
+                        String target = tokens[1];
+                        if(target.equals("..")) {
+                            currentDir = currentDir.getParentFile();
+                        } else {
+                            File newDir = new File(currentDir, target);
+                            if(newDir.exists() && newDir.isDirectory()) {
+                                currentDir = newDir;
+                            } else {
+                                System.out.println("Diretorio nao encontrado: " + target);
+                            }
+                        }
+                    }
+                    break;
+                    
+                case "pwd":
+                    System.out.println(currentDir.getPath());
+                    break;
+                    
+                case "ls":
+                    for(File file : currentDir.listFiles()) {
+                    	
+                        System.out.println(file.getName());
+                    
+                    }
+                    break;
+                    
+                case "cat":
+                    if(tokens.length > 1) {
+                        Path filePath = Paths.get(currentDir.getPath(), tokens[1]);
+                        if(Files.exists(filePath) && !Files.isDirectory(filePath)) {
+                            Files.lines(filePath).forEach(System.out::println);
+                        } else {
+                            System.out.println("Arquivo nao encontrado ou é um diretorio: " + tokens[1]);
+                        }
+                    }
+                    break;
+                    
+                case "cp":
+                    if(tokens.length > 2) {
+                        Path sourcePath = Paths.get(currentDir.getPath(), tokens[1]);
+                        Path destPath = Paths.get(currentDir.getPath(), tokens[2]);
+                        if(Files.exists(sourcePath) && !Files.isDirectory(sourcePath)) {
+                            Files.copy(sourcePath, destPath, StandardCopyOption.REPLACE_EXISTING);
+                        } else {
+                            System.out.println("Arquivo nao encontrado ou é um diretorio: " + tokens[1]);
+                        }
+                    }
+                    break;
+                    
+                case "mv":
+                    if(tokens.length > 2) {
+                        Path sourcePath = Paths.get(currentDir.getPath(), tokens[1]);
+                        Path destPath = Paths.get(currentDir.getPath(), tokens[2]);
+                        if(Files.exists(sourcePath) && !Files.isDirectory(sourcePath)) {
+                            Files.move(sourcePath, destPath, StandardCopyOption.REPLACE_EXISTING);
+                        } else {
+                            System.out.println("Arquivo nao encontrado ou é um diretorio: " + tokens[1]);
+                        }
+                    }
+                    break;
+                    
+                case "mkdir":
+                    if(tokens.length > 1) {
+                        Path dirPath = Paths.get(currentDir.getPath(), tokens[1]);
+                        if(!Files.exists(dirPath)) {
+                            Files.createDirectory(dirPath);
+                        } else {
+                            System.out.println("Directory already exists: " + tokens[1]);
+                        }
+                    }
+                    break;
+                    
+                case "rm":
+                    if(tokens.length > 1) {
+                        Path filePath = Paths.get(currentDir.getPath(), tokens[1]);
+                        if(Files.exists(filePath) && !Files.isDirectory(filePath)) {
+                            Files.delete(filePath);
+                        } else {
+                            System.out.println("Arquivo nao encontrado ou é um diretorio: " + tokens[1]);
+                        }
+                    }
+                    break;
+                    
+                case "head":
+                    if(tokens.length > 1) {
+                        Path filePath = Paths.get(currentDir.getPath(), tokens[1]);
+                        if(Files.exists(filePath) && !Files.isDirectory(filePath)) {
+                            Files.lines(filePath).limit(10).forEach(System.out::println);
+                        } else {
+                            System.out.println("Arquivo nao encontrado ou é um diretorio: " + tokens[1]);
+                        }
+                    }
+                    break;
+                    
+                case "":
+                    break;
+                    
+                default:
+                    System.out.println("Comando nao encontrado: " + tokens[0]);
+                    break;
+            }
+        }
+        
+        reader.close();
+    }
+    
+}

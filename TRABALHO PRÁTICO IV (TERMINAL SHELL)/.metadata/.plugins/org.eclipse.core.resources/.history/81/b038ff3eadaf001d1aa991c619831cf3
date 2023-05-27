@@ -1,0 +1,24 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+public class ListDirectories {
+    public static void main(String[] args) throws IOException, InterruptedException {
+        // Cria um processo para executar o comando "ls"
+        ProcessBuilder processBuilder = new ProcessBuilder("dir");
+        // Define o diretório de trabalho para o diretório home do usuário
+        processBuilder.directory(new File(System.getProperty("user.home")));
+        // Redireciona a saída padrão para um BufferedReader
+        processBuilder.redirectErrorStream(true);
+        Process process = processBuilder.start();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        // Lê a saída do comando linha por linha e imprime na tela
+        String line;
+        while ((line = reader.readLine()) != null) {
+            System.out.println(line);
+        }
+        // Aguarda o término do processo
+        process.waitFor();
+    }
+}

@@ -1,0 +1,19 @@
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+public class AcoesExibir {
+    public static void main(String[] args) {
+        // Obter o caminho do diretório "Documents" no diretório do usuário atual
+        String userHome = System.getProperty("user.home");
+        Path docDir = Paths.get(userHome, "");
+
+        // Listar todos os arquivos e diretórios na pasta "Documents"
+        try {
+            Files.list(docDir).forEach(System.out::println);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}

@@ -1,0 +1,41 @@
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Scanner;
+
+public class Shell {
+	
+
+
+    
+    public static void main(String[] args) throws IOException {
+        
+//        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    	Scanner scan =  new Scanner(System.in);
+//    	String reader = scan.nextLine();
+        String input = "";
+        File caminho = new File(System.getProperty("user.home"));
+        TerminalLinux termLinux = new TerminalLinux();
+        
+        
+
+        
+        //System.out.println("Diretório atual: " + System.getProperty("user"));
+        while(!input.equals("exit")) {
+        	
+            System.out.print(caminho.getPath() + " > ");
+            input = scan.nextLine();
+            String[] comandoUsuario = input.split(" "); 
+            
+            caminho = termLinux.runTerminal(comandoUsuario, caminho);
+            
+
+        }
+        
+        scan.close();
+    }
+    
+}

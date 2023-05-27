@@ -1,0 +1,92 @@
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.concurrent.Semaphore;
+
+
+public class BarbeariaMain {
+
+	static ArrayList<Cliente> clientes = new ArrayList<Cliente>(1000);
+	static ArrayList<Cliente> oficiais = new ArrayList<Cliente>(20);
+	static ArrayList<Cliente> sargentos = new ArrayList<Cliente>(20);
+	static ArrayList<Cliente> cabos = new ArrayList<Cliente>(20);
+	static Tainha tainha = new Tainha();
+	static Semaphore semaforo = new Semaphore(1);
+	static Barbeiro zero = new Barbeiro("Zero");
+	static Barbeiro dentinho = new Barbeiro("Dentinho");
+	static Barbeiro otto = new Barbeiro("Otto");
+	static Escovinha escovinha = new Escovinha(zero, dentinho, otto);
+	static int numBarbeiros;
+	
+	static boolean isNotCrowded() {
+		return cadeirasOcupadas() != 20;
+	}
+	
+	static boolean isNotEmpty() {
+		return cadeirasOcupadas() != 0;
+	}
+	
+	static int cadeirasOcupadas() {
+		return (oficiais.size()+sargentos.size()+cabos.size());
+	}
+	
+	static int cadeirasLivres() {
+		return 20 - cadeirasOcupadas();
+	}
+	
+	static boolean isAllAlive() {
+		return (tainha.isAlive()||zero.isAlive()||dentinho.isAlive()||otto.isAlive());
+	}
+	
+	
+	/**
+	 *  Principal 
+	 * */
+	
+	
+	public static void main(String[] args) throws Exception {
+		
+		System.out.println("Desenvolvido por Kristhian Albuquerque e Thiago Rodrigo \n"
+				+ "Solicitado pelo professor Eduardo Luzeiro para a disciplina de Sistemas Operacionais"
+				+ "\n-------------------------------------------------------------------");
+		System.out.println("\n\nSeja bem vindo ao SETUP da Barbearia, para começarmos:");
+		
+		System.out.println("Digite o endereço do arquivo: ");
+		
+		Scanner scan = new Scanner(System.in);
+		String arquivo = scan.nextLine();
+		FileReader file = new FileReader(arquivo);
+		Scanner input = new Scanner(file);
+
+		while(input.hasNextLine()) {
+			clientes.add(new Cliente(input.nextInt(), input.nextInt()));
+		}
+		input.close();
+		file.close();
+		
+		input = new Scanner(System.in);
+		
+		System.out.println("Defina o periodo de cochilo do sargento tainha [1-5]:");
+		int periodoCochilo = input.nextInt();
+		
+		System.out.println("Defina o numero de barbeiros [1-3]:");
+		numBarbeiros = input.nextInt();
+		
+		tainha.setPeriodo(periodoCochilo);
+		tainha.start();
+		
+		escovinha.start();
+		System.out.println("total oficiais: " + oficiais.size());
+		
+		if(numBarbeiros >= 1) zero.start();
+		if(numBarbeiros >= 2) dentinho.start();
+		if(numBarbeiros >= 3) otto.start();
+		
+
+
+		
+		input.close();
+
+	}
+
+}

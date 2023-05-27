@@ -1,0 +1,45 @@
+import java.io.File;
+import java.util.Scanner;
+
+public class Shell {
+	
+	//getParentFile - retorna todos os arquivos anteriores ao que eu to ex a/b/c, retorna a/b
+	
+
+    
+    public static void main(String[] args) {
+        
+    	System.out.println("Thiago Rodrigo Monteiro Salgado [versão 21.95.44.56]\r\n"
+    			+ "(c) Professor Eduardo Luzeiro Feitosa. Todos os direitos reservados.\n");
+
+    	Scanner scan =  new Scanner(System.in);
+        String comandoUser = "";
+        File caminho = new File(System.getProperty("user.home"));
+        TerminalLinux termLinux = new TerminalLinux();
+        boolean run = true;
+       
+        while(run) {
+        	
+            System.out.print(caminho.getPath() + ">");
+            comandoUser = scan.nextLine();
+            String[] comandoUsuario = comandoUser.split(" "); 
+            
+            if(comandoUser.equals("exit "))
+            {
+            	run = false;
+            	
+            }else {
+            	
+            	caminho = termLinux.runTerminal(comandoUsuario, caminho);
+                
+            }
+            
+
+            
+
+        }
+        
+        scan.close();
+    }
+    
+}

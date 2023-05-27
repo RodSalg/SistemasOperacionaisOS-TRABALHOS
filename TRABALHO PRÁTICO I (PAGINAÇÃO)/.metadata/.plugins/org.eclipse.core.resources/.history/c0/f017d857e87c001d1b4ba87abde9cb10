@@ -1,0 +1,313 @@
+package sistema_operacional_ELF;
+
+import java.util.ArrayList;
+//import java.util.Arrays;
+//import java.util.Scanner;
+import java.util.Scanner;
+
+public class EscalonamentosAlg extends Processo {
+	
+	
+	public static void FCFS() {
+	
+		ArrayList<Processo> processos = new ArrayList<Processo>();
+		processos = setProcessos();
+		
+		
+		int numProc = processos.get(0).numProcessos; //gambiarra
+		/*int tempoVida[] = new int[numProc];
+        int tempoEspera[] = new int[numProc];*/
+        float mediaTempoVida = 0;
+        float mediaTempoEspera = 0;
+
+        
+	    // achando o momento em que finalizam e somando todos para achar o tempo medio e 
+        //tempo de médio de espera
+	    for(int  i = 0 ; i < numProc; i++) // um laço de repetição para o número de processos
+	    {
+
+	    	
+	        if( i == 0) // primeiro caso (primeiro elemento)
+	        {
+	            processos.get(i).setTempoCompletou( processos.get(i).tempoIngresso + processos.get(i).duracao ); 
+	        }
+	        else //agora para casos posteriores
+	        {
+	        	if( processos.get(i).tempoIngresso > processos.get(i - 1).tempoCompletou ) // se ele entrar em um tempo depois que o processo anterior terminou
+	        
+	        	{
+	        	
+	        		// o processo vai ser alocado na próxima posição sem problema algum com o tempo que terminou do tempo que entrou + sua duração;
+	        		processos.get(i).setTempoCompletou( processos.get(i).tempoIngresso + processos.get(i).duracao ); 
+	            
+	        
+	        	}
+	        
+	        	else { //caso  ele entre e o último ainda não tenha sido completado...
+	        			        		
+	        		//vamos pegar o tempo que o anterior terminou + a duração total do processo que estamos
+	        		processos.get(i).setTempoCompletou( processos.get(i - 1).tempoCompletou + processos.get(i).duracao );
+	        	}     		
+	        
+	        }
+	        
+	        
+	        //vamos guardar em um vetor em cada posição o tempo de vida (ou seja, o tempo que cada um dos processos durou processando que consiste em: 
+	        // tempoTotal - tempoIngresso
+	        processos.get(i).tempoVida = processos.get(i).tempoCompletou - processos.get(i).tempoIngresso ;
+	        
+	        //o mesmo acontece para o tempoMedio que consiste em: tempo de vida - duracaoTotal
+	        processos.get(i).tempoEspera =  processos.get(i).tempoVida - processos.get(i).duracao;
+	        
+	        				//////////////// media ////////////////
+	        mediaTempoVida +=   processos.get(i).tempoVida; // somatório do tempo de vida dividido pelo numero de processos
+	        mediaTempoEspera +=  processos.get(i).tempoEspera; // somatório do tempo de espera dividido pelo numero de processos
+	        
+	    }
+	    
+	    System.out.printf("PID   | T.I.  | DUR.  | T.C  | T.V.  |  T.E. \n");
+	    
+	    for(int  i = 0 ; i< numProc;  i++)
+	    {
+	        System.out.println(processos.get(i).PID + "  \t " + processos.get(i).tempoIngresso + "\t" + processos.get(i).duracao  +
+	        		"\t" + processos.get(i).tempoCompletou  + "\t" + processos.get(i).tempoVida + "\t"  +  processos.get(i).tempoEspera ) ;
+	    }
+		
+	    System.out.printf("\n Tempo médio de espera: %f \n ", mediaTempoEspera / numProc);     // printing average waiting time.
+	    System.out.printf("\n Tempo médio de vida: %f \n", mediaTempoVida / numProc);    // printing average turnaround time.
+	}
+
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	public static void SJF() {
+		
+		ArrayList<Processo> processos = new ArrayList<Processo>();
+		processos = setProcessos();
+		
+		
+		int numProc = processos.get(0).numProcessos; //gambiarra
+
+		System.out.println (" --------------- Escalonador SJF -------------");
+		
+		//int ta[] = new int[numProc]; // ta means turn around time
+		//int wt[] = new int[numProc];  //wt means waiting time
+		//int f[] = new int[numProc];  // f means it is flag it checks process is completed or not É O MEU TEMPO COMPLETOU 
+		
+		int relogioProcessos = 0;
+		int total = 0;
+		float mediaVida = 0; 
+		int mediaEspera = 0;
+		 
+
+		System.out.println("\npid  chegada duracao  conclusao vida  espera");
+		while(true)
+		{
+			int auxNumProc = numProc;
+			int relogio = 1000;
+			if (total == numProc) {
+				break;
+			} // total no of process = completed process loop will be terminated;
+			for (int i=0; i < numProc; i++)
+			{
+					
+				/*
+				* If i'th process arrival time <= system time and its flag=0 and burst<min
+				* That process will be executed first
+				*/
+						
+				if ((processos.get(i).tempoIngresso <= relogioProcessos) && (processos.get(i).tempoCompletou == 0) && (processos.get(i).duracao < relogio))
+				{
+					relogio = processos.get(i).duracao;
+					auxNumProc = i;
+				}
+		
+			}
+			/* If c==n means c value can not updated because no process arrival time< system time so we increase the system time */
+			if (auxNumProc == numProc) {
+				relogioProcessos++;
+			}else{
+				processos.get(auxNumProc).tempoCompletou = relogioProcessos + processos.get(auxNumProc).duracao;
+				relogioProcessos += processos.get(auxNumProc).duracao;
+				processos.get(auxNumProc).tempoVida = processos.get(auxNumProc).tempoCompletou - processos.get(auxNumProc).tempoIngresso;
+				processos.get(auxNumProc).tempoEspera = processos.get(auxNumProc).tempoVida - processos.get(auxNumProc).duracao;
+				processos.get(auxNumProc).tempoCompletou = 1; 
+				System.out.println(processos.get(auxNumProc).PID + "\t" + processos.get(auxNumProc).tempoIngresso + "\t"+ processos.get(auxNumProc).duracao +
+						"\t" + processos.get(auxNumProc).tempoCompletou +"\t" + processos.get(auxNumProc).tempoVida + "\t"+ processos.get(auxNumProc).tempoEspera);
+				total++;
+			}
+		
+		
+		}//final do while
+		//System.out.println("\npid  arrival brust  complete turn waiting");
+		for(int i=0; i < numProc; i++)
+		{
+			mediaVida += processos.get(i).tempoEspera;
+			mediaEspera += processos.get(i).tempoVida;
+			//System.out.println(processos.get(i).PID + "\t" + processos.get(i).tempoIngresso + "\t"+ processos.get(i).duracao + "\t" + processos.get(i).tempoCompletou +"\t" + ta[i] + "\t"+wt[i]);
+		}
+		
+		float numerador = mediaEspera;
+		float denominador = numProc;
+		float resultadoDivisao = numerador / denominador;
+		
+		//System.out.println("O TT / TOTAL PROC -> " + avgta + "/" + numProc);
+		System.out.println ("\nTempo de Vida "+ resultadoDivisao);
+		
+		numerador = mediaVida;
+		denominador = numProc;
+		resultadoDivisao = numerador / denominador;
+		
+		System.out.println ("Tempo de Espera "+ resultadoDivisao);
+
+	}
+
+
+	public static void RoundRobin() {
+		
+		ArrayList<Processo> processos = new ArrayList<Processo>();
+		processos = setProcessos();
+		Scanner inp = new Scanner(System.in);
+		
+    	int n,tq, timer = 0;
+    	int maxProccessIndex = 0;
+        float avgWait = 0, avgTT = 0;
+        System.out.print("\nQual o quantum desejado? : ");
+        tq = inp.nextInt();
+        numProc = processos.
+        
+        
+        
+        int arrival[] = new int[n];
+        int burst[] = new int[n];
+        int wait[] = new int[n];
+        int turn[] = new int[n];
+        int queue[] = new int[n];
+        int temp_burst[] = new int[n];
+        boolean complete[] = new boolean[n];
+ 
+        System.out.print("\nEnter the arrival time of the processes : ");
+        for(int i = 0; i < n; i++)
+            arrival[i] = inp.nextInt();
+ 
+        System.out.print("\nEnter the burst time of the processes : ");
+        for(int i = 0; i < n; i++){
+            burst[i] = inp.nextInt();
+            temp_burst[i] = burst[i];
+        }
+ 
+        for(int i = 0; i < n; i++){    //Initializing the queue and complete array
+            complete[i] = false;
+            queue[i] = 0;
+        }
+        while(timer < arrival[0])    //Incrementing Timer until the first process arrives
+            timer++;
+        queue[0] = 1;
+         
+        while(true){
+            boolean flag = true;
+            for(int i = 0; i < n; i++){
+                if(temp_burst[i] != 0){
+                    flag = false;
+                    break;
+                }
+            }
+            if(flag)
+                break;
+ 
+            for(int i = 0; (i < n) && (queue[i] != 0); i++){
+                int ctr = 0;
+                while((ctr < tq) && (temp_burst[queue[0]-1] > 0)){
+                    temp_burst[queue[0]-1] -= 1;
+                    timer += 1;
+                    ctr++;
+ 
+                    //Updating the ready queue until all the processes arrive
+                    checkNewArrival(timer, arrival, n, maxProccessIndex, queue);
+                }
+                if((temp_burst[queue[0]-1] == 0) && (complete[queue[0]-1] == false)){
+                    turn[queue[0]-1] = timer;        //turn currently stores exit times
+                    complete[queue[0]-1] = true;
+                }
+                 
+                  //checks whether or not CPU is idle
+                boolean idle = true;
+                if(queue[n-1] == 0){
+                    for(int k = 0; k < n && queue[k] != 0; k++){
+                        if(complete[queue[k]-1] == false){
+                            idle = false;
+                        }
+                    }
+                }
+                else
+                    idle = false;
+ 
+                if(idle){
+                    timer++;
+                    checkNewArrival(timer, arrival, n, maxProccessIndex, queue);
+                }
+               
+                //Maintaining the entries of processes after each premption in the ready Queue
+                queueMaintainence(queue,n);
+            }
+        }
+ 
+        for(int i = 0; i < n; i++){
+            turn[i] = turn[i] - arrival[i];
+            wait[i] = turn[i] - burst[i];
+        }
+ 
+        System.out.print("\nProgram No.\tArrival Time\tBurst Time\tWait Time\tTurnAround Time"
+                         + "\n");
+        for(int i = 0; i < n; i++){
+            System.out.print(i+1+"\t\t"+arrival[i]+"\t\t"+burst[i]
+                             +"\t\t"+wait[i]+"\t\t"+turn[i]+ "\n");
+        }
+        for(int i =0; i< n; i++){
+            avgWait += wait[i];
+            avgTT += turn[i];
+        }
+        System.out.print("\nAverage wait time : "+(avgWait/n)
+                         +"\nAverage Turn Around Time : "+(avgTT/n));
+    }
+    public static void queueUpdation(int queue[],int timer,int arrival[],int n, int maxProccessIndex){
+        int zeroIndex = -1;
+        for(int i = 0; i < n; i++){
+            if(queue[i] == 0){
+                zeroIndex = i;
+                break;
+            }
+        }
+        if(zeroIndex == -1)
+            return;
+        queue[zeroIndex] = maxProccessIndex + 1;
+    }
+ 
+    public static void checkNewArrival(int timer, int arrival[], int n, int maxProccessIndex,int queue[]){
+        if(timer <= arrival[n-1]){
+            boolean newArrival = false;
+            for(int j = (maxProccessIndex+1); j < n; j++){
+                if(arrival[j] <= timer){
+                    if(maxProccessIndex < j){
+                        maxProccessIndex = j;
+                        newArrival = true;
+                    }
+                }
+            }
+            if(newArrival)    //adds the index of the arriving process(if any)
+                queueUpdation(queue,timer,arrival,n, maxProccessIndex);       
+        }
+    }
+   
+    public static void queueMaintainence(int queue[], int n){
+ 
+        for(int i = 0; (i < n-1) && (queue[i+1] != 0) ; i++){
+            int temp = queue[i];
+            queue[i] = queue[i+1];
+            queue[i+1] = temp;
+        }
+		
+		
+	}
+}

@@ -1,0 +1,15 @@
+class Cliente {
+	
+	int categoria, tempoCorte;
+	
+	Cliente(int categoria, int tempoCorte) {
+		this.categoria = categoria;
+		this.tempoCorte = tempoCorte;
+	}
+	
+	@Override
+	public String toString() {
+		return (categoria==1?"Oficial":categoria==2?"Sargento":categoria==3?"Cabo":"pausa")
+				+" tempo de servico de "+tempoCorte+" segundo(s)";
+	}
+}

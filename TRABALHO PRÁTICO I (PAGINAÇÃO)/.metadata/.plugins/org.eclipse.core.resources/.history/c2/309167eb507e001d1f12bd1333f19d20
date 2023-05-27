@@ -1,0 +1,293 @@
+package sistema_operacional_ELF;
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+//import java.util.Arrays;
+//import java.util.Scanner;
+import java.util.Scanner;
+
+public class EscalonamentosAlg extends Processo {
+	
+	
+	public static void FCFS() {
+	
+		ArrayList<Processo> processos = new ArrayList<Processo>();
+		processos = setProcessos();
+		
+		
+		int numProc = processos.get(0).numProcessos; //gambiarra
+		/*int tempoVida[] = new int[numProc];
+        int tempoEspera[] = new int[numProc];*/
+        float mediaTempoVida = 0;
+        float mediaTempoEspera = 0;
+
+        
+	    // achando o momento em que finalizam e somando todos para achar o tempo medio e 
+        //tempo de médio de espera
+	    for(int  i = 0 ; i < numProc; i++) // um laço de repetição para o número de processos
+	    {
+
+	    	
+	        if( i == 0) // primeiro caso (primeiro elemento)
+	        {
+	            processos.get(i).setTempoCompletou( processos.get(i).tempoIngresso + processos.get(i).duracao ); 
+	        }
+	        else //agora para casos posteriores
+	        {
+	        	if( processos.get(i).tempoIngresso > processos.get(i - 1).tempoCompletou ) // se ele entrar em um tempo depois que o processo anterior terminou
+	        
+	        	{
+	        	
+	        		// o processo vai ser alocado na próxima posição sem problema algum com o tempo que terminou do tempo que entrou + sua duração;
+	        		processos.get(i).setTempoCompletou( processos.get(i).tempoIngresso + processos.get(i).duracao ); 
+	            
+	        
+	        	}
+	        
+	        	else { //caso  ele entre e o último ainda não tenha sido completado...
+	        			        		
+	        		//vamos pegar o tempo que o anterior terminou + a duração total do processo que estamos
+	        		processos.get(i).setTempoCompletou( processos.get(i - 1).tempoCompletou + processos.get(i).duracao );
+	        	}     		
+	        
+	        }
+	        
+	        
+	        //vamos guardar em um vetor em cada posição o tempo de vida (ou seja, o tempo que cada um dos processos durou processando que consiste em: 
+	        // tempoTotal - tempoIngresso
+	        processos.get(i).tempoVida = processos.get(i).tempoCompletou - processos.get(i).tempoIngresso ;
+	        
+	        //o mesmo acontece para o tempoMedio que consiste em: tempo de vida - duracaoTotal
+	        processos.get(i).tempoEspera =  processos.get(i).tempoVida - processos.get(i).duracao;
+	        
+	        				//////////////// media ////////////////
+	        mediaTempoVida +=   processos.get(i).tempoVida; // somatório do tempo de vida dividido pelo numero de processos
+	        mediaTempoEspera +=  processos.get(i).tempoEspera; // somatório do tempo de espera dividido pelo numero de processos
+	        
+	    }
+	    
+	    System.out.printf("PID   | T.I.  | DUR.  | T.C  | T.V.  |  T.E. \n");
+	    
+	    for(int  i = 0 ; i< numProc;  i++)
+	    {
+	        System.out.println(processos.get(i).PID + "  \t " + processos.get(i).tempoIngresso + "\t" + processos.get(i).duracao  +
+	        		"\t" + processos.get(i).tempoCompletou  + "\t" + processos.get(i).tempoVida + "\t"  +  processos.get(i).tempoEspera ) ;
+	    }
+		
+	    System.out.printf("\n Tempo médio de espera: %f \n ", mediaTempoEspera / numProc);     // printing average waiting time.
+	    System.out.printf("\n Tempo médio de vida: %f \n", mediaTempoVida / numProc);    // printing average turnaround time.
+	}
+
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	public static void SJF() {
+		
+		ArrayList<Processo> processos = new ArrayList<Processo>();
+		processos = setProcessos();
+		
+		
+		int numProc = processos.get(0).numProcessos; //gambiarra
+
+		System.out.println (" --------------- Escalonador SJF -------------");
+		
+		//int ta[] = new int[numProc]; // ta means turn around time
+		//int wt[] = new int[numProc];  //wt means waiting time
+		//int f[] = new int[numProc];  // f means it is flag it checks process is completed or not É O MEU TEMPO COMPLETOU 
+		
+		int relogioProcessos = 0;
+		int total = 0;
+		float mediaVida = 0; 
+		int mediaEspera = 0;
+		 
+
+		System.out.println("\npid  chegada duracao  conclusao vida  espera");
+		while(true)
+		{
+			int auxNumProc = numProc;
+			int relogio = 1000;
+			if (total == numProc) {
+				break;
+			} // total no of process = completed process loop will be terminated;
+			for (int i=0; i < numProc; i++)
+			{
+					
+				/*
+				* If i'th process arrival time <= system time and its flag=0 and burst<min
+				* That process will be executed first
+				*/
+						
+				if ((processos.get(i).tempoIngresso <= relogioProcessos) && (processos.get(i).tempoCompletou == 0) && (processos.get(i).duracao < relogio))
+				{
+					relogio = processos.get(i).duracao;
+					auxNumProc = i;
+				}
+		
+			}
+			/* If c==n means c value can not updated because no process arrival time< system time so we increase the system time */
+			if (auxNumProc == numProc) {
+				relogioProcessos++;
+			}else{
+				processos.get(auxNumProc).tempoCompletou = relogioProcessos + processos.get(auxNumProc).duracao;
+				relogioProcessos += processos.get(auxNumProc).duracao;
+				processos.get(auxNumProc).tempoVida = processos.get(auxNumProc).tempoCompletou - processos.get(auxNumProc).tempoIngresso;
+				processos.get(auxNumProc).tempoEspera = processos.get(auxNumProc).tempoVida - processos.get(auxNumProc).duracao;
+				processos.get(auxNumProc).tempoCompletou = 1; 
+				System.out.println(processos.get(auxNumProc).PID + "\t" + processos.get(auxNumProc).tempoIngresso + "\t"+ processos.get(auxNumProc).duracao +
+						"\t" + processos.get(auxNumProc).tempoCompletou +"\t" + processos.get(auxNumProc).tempoVida + "\t"+ processos.get(auxNumProc).tempoEspera);
+				total++;
+			}
+		
+		
+		}//final do while
+		//System.out.println("\npid  arrival brust  complete turn waiting");
+		for(int i=0; i < numProc; i++)
+		{
+			mediaVida += processos.get(i).tempoEspera;
+			mediaEspera += processos.get(i).tempoVida;
+			//System.out.println(processos.get(i).PID + "\t" + processos.get(i).tempoIngresso + "\t"+ processos.get(i).duracao + "\t" + processos.get(i).tempoCompletou +"\t" + ta[i] + "\t"+wt[i]);
+		}
+		
+		float numerador = mediaEspera;
+		float denominador = numProc;
+		float resultadoDivisao = numerador / denominador;
+		
+		//System.out.println("O TT / TOTAL PROC -> " + avgta + "/" + numProc);
+		System.out.println ("\nTempo de Vida "+ resultadoDivisao);
+		
+		numerador = mediaVida;
+		denominador = numProc;
+		resultadoDivisao = numerador / denominador;
+		
+		System.out.println ("Tempo de Espera "+ resultadoDivisao);
+
+	}
+
+
+	public static void RoundRobin() {
+		
+		ArrayList<Processo> processos1 = new ArrayList<Processo>();
+		processos1 = setProcessos();
+		
+		
+		int numProc = processos1.get(0).numProcessos; //gambiarra
+		//Scanner scanner = new Scanner (System.in);
+		
+		int quantum;
+		int N;
+		int entrada, tempoAtual, execucao, q, temposFinais[], quantidadeProcessos, burstNovo, temposExecucao[];
+		ArrayList chegada, burst, processos, cpchegada, cpburst;
+		
+		double tempoMedioExecucao, tempoMedioEspera, turnaround;
+
+		
+		String ordem;
+		System.out.println("quantum: ");
+		quantum = 1;
+			
+		//contTeste++;
+		processos = new ArrayList();
+		chegada = new ArrayList();
+		burst = new ArrayList();
+		quantidadeProcessos = numProc;
+		temposFinais = new int[numProc];
+		temposExecucao = new int[numProc];
+		
+		for(int i = 0; i < numProc; i++) {
+			//System.out.println("qual o tempo de chegada do P" + (i+1));
+			//entrada = scanner.nextInt();
+			chegada.add(processos1.get(i).tempoIngresso);
+			
+			//System.out.println("quala duracao do P" + (i+1));
+			entrada = processos1.get(i).duracao;
+			burst.add(entrada);
+			
+		} //fim do for
+		
+		cpchegada = (ArrayList) chegada.clone();
+		cpburst = (ArrayList) burst.clone();
+		
+		tempoAtual = (int) chegada.get(0);
+		
+		processos = new ArrayList();
+		processos = new ArrayList();
+	
+		while(quantidadeProcessos > 0) {
+			
+			for(int i = 0; i < numProc; i++) {
+				if( (int) chegada.get(i) != -1 && (int) chegada.get(i) <= tempoAtual) {
+					processos.add(i);
+					chegada.set(i, -1);
+				}
+			}
+			if(processos.isEmpty()) {
+				tempoAtual++;
+			}else {
+				execucao = (int) processos.remove(0);
+				System.out.printf(" -> %s", processos1.get(execucao).PID );
+				q = quantum;
+				
+				while(q > 0 && (int) burst.get(execucao) > 0) {
+					tempoAtual++;
+					q--;
+					burstNovo = (int) burst.get(execucao) - 1;
+					burst.set(execucao,  burstNovo);
+					
+				}
+				if((int) burst.get(execucao) > 0) {
+					for(int i = 0; i < numProc; i++) {
+						if( (int) chegada.get(i) != -1 && (int) chegada.get(i) <= tempoAtual)
+						{
+							processos.add(i);
+							chegada.set(i, -1);
+							
+						}						
+						
+					
+					}
+					processos.add(execucao);
+				}else {
+					temposFinais[execucao] = tempoAtual;
+					quantidadeProcessos--;
+				}
+			
+			}
+			
+		}
+		
+		tempoMedioExecucao = 0;
+		tempoMedioEspera  = 0;
+		
+		for(int i = 0; i < numProc; i++) {
+			
+			temposExecucao[i] = temposFinais[i] - (int) cpchegada.get(i);
+			tempoMedioExecucao += temposExecucao[i];
+			tempoMedioEspera += temposExecucao[i] - (int) cpburst.get(i);
+			
+			
+		}
+		
+//			System.out.println("tempo medio :" + tempoMedioExecucao + "tempo medio espera: " + tempoMedioEspera);
+		tempoMedioExecucao = tempoMedioExecucao / numProc;
+		tempoMedioEspera = tempoMedioEspera / numProc;
+		
+		//System.out.println("processamento - PART " + contTeste);
+		
+		//guarda o tempo de vida
+		for(int i = 0; i < numProc; i++) {
+			turnaround = (int) temposFinais[i] - (int) cpchegada.get(i);
+					
+		}
+		System.out.println();
+		//System.out.println(ordem);
+		System.out.println("TT medio: " + tempoMedioExecucao);
+		System.out.println("TA medio: " + tempoMedioEspera);
+		
+		System.out.println();
+		N = 0;
+		
+	}
+		
+
+}

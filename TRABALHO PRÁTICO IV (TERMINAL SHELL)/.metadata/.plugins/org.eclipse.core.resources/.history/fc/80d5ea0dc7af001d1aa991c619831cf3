@@ -1,0 +1,17 @@
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+public class Main {
+    public static void main(String[] args) {
+        // Obter o caminho do diretório atual
+        Path dir = Paths.get(".");
+        
+        // Listar todos os arquivos e diretórios no diretório
+        try {
+            Files.list(dir).forEach(System.out::println);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
